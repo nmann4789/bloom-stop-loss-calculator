@@ -3,15 +3,16 @@
     <div class="calculator">
       <div class="form-header">
         <h2>Stop Loss Calculator</h2>
+        <h3>Are you self insured or fully insured?</h3>
       </div>
       <form v-on:submit.prevent="handleInputsNext" id="calculator-form" v-bind:class="{ 'hidden': bShowPersonalInformation }">
         <div>
-          <label for="employeeLives">Employee Lives:</label>
-          <input required type="number" v-model="employeeLives.formInput" name="employeeLives" placeholder="Enter Number">
-        </div>
-        <div>
           <div v-on:click="setSelfInsured(input, $event)" class="insurance-type">Self Insured</div>
           <div v-on:click="setFullyInsured(input, $event)" class="insurance-type">Fully Insured</div>
+        </div>
+        <div v-if="bShowInputs">
+          <label for="employeeLives">Employee Lives:</label>
+          <input required type="number" v-model="employeeLives.formInput" name="employeeLives" placeholder="Enter Number">
         </div>
         <div v-if="!bSelfInsured && bShowInputs">
           <label for="annualPremium">Annual Premium:</label>
@@ -21,11 +22,11 @@
           <label for="annualWorkingFund">Annual Working Fund:</label>
           <input requried type="number" v-model="annualWorkingFund.formInput" name="annualWorkingFund" placeholder="Enter Cost ($)">
         </div>
-        <div v-if="bShowInputs">
+        <div v-if="bSelfInsured && bShowInputs">
           <label for="annualAdminCost">Annual Administrative Cost:</label>
           <input required type="number" v-model="annualAdminCost.formInput" name="annualAdminCost" placeholder="Enter Cost ($)">
         </div>
-        <div v-if="bShowInputs">
+        <div v-if="bSelfInsured && bShowInputs">
           <label for="annualStopLossPremium">Annual Stop Loss Premium:</label>
           <input required type="number" v-model="annualStopLossPremium.formInput" name="annualStopLossPremium" placeholder="Enter Cost ($)">
         </div>
@@ -68,11 +69,11 @@
           <div class="table-subheader">Self Insured</div>
           <div class="table-row">
             <div>Premium Savings (%)</div>
-            <div>{{this.results.fullyInsuredInfo.premiumSavingsPercent*100}}%</div>
+            <div>{{parseFloat(this.results.fullyInsuredInfo.premiumSavingsPercent*100).toFixed(2)}}%</div>
           </div>
           <div class="table-row total">
             <div>Annual Premium Savings ($)</div>
-            <div>${{this.results.fullyInsuredInfo.annualPremiumSavings}}</div>
+            <div>${{parseFloat(this.results.fullyInsuredInfo.annualPremiumSavings).toFixed(2)}}</div>
           </div>
         </div>
         <div class="table">
@@ -91,75 +92,75 @@
           </div>
           <div class="table-row">
             <div>Monthly Premium</div>
-            <div>{{this.annualPremium.formInput/12}}</div>
-            <div>{{this.calculated.annualPremium/12}}</div>
-            <div>{{this.results.bloom.monthlyPremium}}</div>
+            <div>${{parseFloat(this.annualPremium.formInput/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualPremium/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyPremium).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Premium</div>
-            <div>{{this.annualPremium.formInput}}</div>
-            <div>{{this.calculated.annualPremium}}</div>
-            <div>{{this.results.bloom.annualPremium}}</div>
+            <div>${{parseFloat(this.annualPremium.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualPremium).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.annualPremium).toFixed(2)}}</div>
           </div>
           <div class="table-row row-separator">
             <div>$PEPM Premium</div>
-            <div>$0.00</div>
-            <div>$0.00</div>
-            <div>${{(this.results.bloom.monthlyPremium/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyPremium/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyPremium/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyPremium/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Monthly Administrative Cost</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{(this.assumptions.selfInsuredInfo.adminAnnualCost/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.assumptions.selfInsuredInfo.adminAnnualCost/12).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Administrative Cost</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{(this.assumptions.selfInsuredInfo.adminAnnualCost).toFixed(2)}}</div>
+            <div>${{parseFloat(this.assumptions.selfInsuredInfo.adminAnnualCost).toFixed(2)}}</div>
           </div>
           <div class="table-row row-separator">
             <div>$PEPM Administrative Cost</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{this.assumptions.selfInsuredInfo.adminAnnualCost/12/this.employeeLives.formInput}}</div>
+            <div>${{parseFloat(this.assumptions.selfInsuredInfo.adminAnnualCost/12/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Monthly Stop Loss Premium</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{this.results.bloom.monthlyStopLossPremium}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyStopLossPremium).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Stop Loss Premium</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{this.results.bloom.annualStopLossPremium}}</div>
+            <div>${{parseFloat(this.results.bloom.annualStopLossPremium).toFixed(2)}}</div>
           </div>
           <div class="table-row row-separator">
             <div>$PEPM Stop Loss Premium</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{(this.calculated.monthlyStopLossPremium/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyStopLossPremium/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Monthly Claims Cost</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{(this.results.bloom.monthlyClaimsCost).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyClaimsCost).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Claims Cost</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{(this.results.bloom.annualClaimsCost).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.annualClaimsCost).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>$PEPM Claims Cost</div>
             <div>N/A</div>
             <div>N/A</div>
-            <div>${{(this.calculated.monthlyClaimsPick/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyClaimsPick/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
         </div>
       </div>
@@ -173,7 +174,7 @@
           </div>
           <div class="table-row total">
             <div>Annual Stop Loss Premium Savings ($)</div>
-            <div>${{(this.results.selfInsuredInfo.annualStopLossPremiumSavings).toFixed(2) }}</div>
+            <div>${{parseFloat(this.results.selfInsuredInfo.annualStopLossPremiumSavings).toFixed(2) }}</div>
           </div>
         </div>
       </div>
@@ -186,23 +187,23 @@
           </div>
           <div class="table-row total">
             <div>Annual Admin Savings ($)</div>
-            <div>${{this.results.bloom.adminAnnualSavings}}</div>
+            <div>${{parseFloat(this.results.bloom.adminAnnualSavings).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Rx Savings via Carve-Out (% of Claims)</div>
-            <div>{{(this.results.bloom.rxSavingsViaCarveOut).toFixed(2)}}%</div>
+            <div>{{parseFloat(this.results.bloom.rxSavingsViaCarveOut).toFixed(2)}}%</div>
           </div>
           <div class="table-row total">
             <div>Annual Rx Savings via Carve-Out ($)</div>
-            <div>${{(this.results.bloom.annualRxSavingsViaCarveOut).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.annualRxSavingsViaCarveOut).toFixed(2)}}</div>
           </div>
           <div class="table-row total additional-savings">
             <div>Total Additional Potential Savings</div>
-            <div>${{(this.results.bloom.totalAdditionalPotentialSavings).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.totalAdditionalPotentialSavings).toFixed(2)}}</div>
           </div>
           <div class="table-row total possible-savings">
             <div>Total Possible Savings</div>
-            <div>${{(this.results.bloom.totalPossibleSavings).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.totalPossibleSavings).toFixed(2)}}</div>
           </div>
         </div>
         <div class="table">
@@ -221,75 +222,75 @@
           </div>
           <div class="table-row">
             <div>Monthly Working Fund</div>
-            <div>{{this.annualWorkingFund.formInput/12}}</div>
-            <div>{{this.calculated.annualWorkingFund/12}}</div>
-            <div>{{this.results.bloom.monthlyWorkingFund}}</div>
+            <div>${{parseFloat(this.annualWorkingFund.formInput/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualWorkingFund/12).toFixed(2)}}</div>
+            <div>{{parseFloat(this.results.bloom.monthlyWorkingFund).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Working Fund</div>
-            <div>{{this.annualWorkingFund.formInput}}</div>
-            <div>{{this.calculated.annualWorkingFund}}</div>
-            <div>{{this.results.bloom.annualWorkingFund}}</div>
+            <div>${{parseFloat(this.annualWorkingFund.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualWorkingFund).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.annualWorkingFund).toFixed(2)}}</div>
           </div>
           <div class="table-row row-separator">
             <div>$PEPM Premium</div>
-            <div>$0.00</div>
-            <div>$0.00</div>
-            <div>${{(this.calculated.monthlyWorkingFund/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyWorkingFund/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyWorkingFund/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyWorkingFund/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Monthly Administrative Cost</div>
-            <div>${{(this.annualAdminCost.formInput/12).toFixed(2)}}</div>
-            <div>${{(this.calculated.annualAdminCost/12).toFixed(2)}}</div>
-            <div>${{(this.assumptions.selfInsuredInfo.adminAnnualCost/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.annualAdminCost.formInput/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualAdminCost/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyAdminCost).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Administrative Cost</div>
-            <div>${{this.annualAdminCost.formInput}}</div>
-            <div>${{this.calculated.annualAdminCost}}</div>
-            <div>${{(this.assumptions.selfInsuredInfo.adminAnnualCost).toFixed(2)}}</div>
+            <div>${{parseFloat(this.annualAdminCost.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualAdminCost).toFixed(2)}}</div>
+            <div>${{(this.results.bloom.annualAdminCost).toFixed(2)}}</div>
           </div>
           <div class="table-row row-separator">
             <div>$PEPM Administrative Cost</div>
-            <div>N/A</div>
-            <div>N/A</div>
-            <div>${{this.assumptions.selfInsuredInfo.adminAnnualCost/12/this.employeeLives.formInput}}</div>
+            <div>${{parseFloat(0.00).toFixed(2)}}</div>
+            <div>${{parseFloat((this.calculated.annualAdminCost/12)/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.assumptions.selfInsuredInfo.adminAnnualCost/12/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Monthly Stop Loss Premium</div>
-            <div>${{(this.annualStopLossPremium.formInput/12).toFixed(2)}}</div>
-            <div>${{this.calculated.monthlyStopLossPremium}}</div>
-            <div>${{this.results.bloom.monthlyStopLossPremium}}</div>
+            <div>${{parseFloat(this.annualStopLossPremium.formInput/12).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyStopLossPremium).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyStopLossPremium).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Stop Loss Premium</div>
-            <div>${{this.annualStopLossPremium.formInput}}</div>
-            <div>${{this.calculated.annualStopLossPremium}}</div>
-            <div>${{this.results.bloom.annualStopLossPremium}}</div>
+            <div>${{parseFloat(this.annualStopLossPremium.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualStopLossPremium).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.annualStopLossPremium).toFixed(2)}}</div>
           </div>
           <div class="table-row row-separator">
             <div>$PEPM Stop Loss Premium</div>
-            <div>N/A</div>
-            <div>N/A</div>
-            <div>${{(this.calculated.monthlyStopLossPremium/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(0.00).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyStopLossPremium/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyStopLossPremium/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Monthly Claims Cost</div>
-            <div>N/A</div>
-            <div>${{(this.calculated.monthlyClaimsPick).toFixed(2)}}</div>
-            <div>${{(this.results.bloom.monthlyClaimsCost).toFixed(2)}}</div>
+            <div>${{parseFloat(0.00).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyClaimsPick).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyClaimsCost).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>Annual Claims Cost</div>
-            <div>N/A</div>
-            <div>${{(this.calculated.annualClaimsPick).toFixed(2)}}</div>
-            <div>${{(this.results.bloom.annualClaimsCost).toFixed(2)}}</div>
+            <div>${{parseFloat(0.00).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.annualClaimsPick).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.annualClaimsCost).toFixed(2)}}</div>
           </div>
           <div class="table-row">
             <div>$PEPM Claims Cost</div>
-            <div>N/A</div>
-            <div>N/A</div>
-            <div>${{(this.calculated.monthlyClaimsPick/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.annualAdminCost.formInput/12/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.calculated.monthlyClaimsPick/this.employeeLives.formInput).toFixed(2)}}</div>
+            <div>${{parseFloat(this.results.bloom.monthlyClaimsCost/this.employeeLives.formInput).toFixed(2)}}</div>
           </div>
         </div>
       </div>
@@ -369,6 +370,8 @@ export default {
           totalPossibleSavings:0,
           monthlyPremium:0,
           annualPremium:0,
+          monthlyAdminCost:0,
+          annualAdminCost:0,
           monthlyWorkingFund:0,
           annualWorkingFund:0,
           monthlyStopLossPremium:0,
@@ -382,16 +385,16 @@ export default {
         formInput:""
       },
       annualPremium:{
-        formInput:""
+        formInput:0
       },
       annualWorkingFund:{
-        formInput:""
+        formInput:0
       },
       annualAdminCost:{
-        formInput:""
+        formInput:0
       },
       annualStopLossPremium:{
-        formInput:""
+        formInput:0
       },
     }
   },
@@ -445,6 +448,10 @@ export default {
       //Self Insured Assumptions
       this.lookupSavings(parseInt(this.employeeLives.formInput));
 
+      if(!this.bSelfInsured){
+        this.annualWorkingFund.formInput = this.annualPremium.formInput
+      }
+
       this.assumptions.selfInsuredInfo.siPemBasedOnLives = this.employeeLives.formInput*this.assumptions.selfInsuredInfo.selfInsuredTotalCost*this.membersPerEmployee*12
       this.assumptions.selfInsuredInfo.pmbSavings = this.assumptions.fullyInsuredInfo.fISavingsRx
       this.assumptions.selfInsuredInfo.adminAnnualCost = this.employeeLives.formInput*this.assumptions.selfInsuredInfo.bloomAdminPEMP*12
@@ -456,7 +463,7 @@ export default {
         this.calculated.annualWorkingFund = (this.annualWorkingFund.formInput > 0) ? this.annualWorkingFund.formInput : this.assumptions.selfInsuredInfo.siPemBasedOnLives
         this.calculated.monthlyWorkingFund = this.calculated.annualWorkingFund/12
 
-        this.calculated.annualAdminCost = (this.annualAdminCost.formInput > 0) ? this.annualAdminCost.formInput : this.assumptions.selfInsuredInfo.projectedCurrentAdmin*this.employeeLives.formInput
+        this.calculated.annualAdminCost = (this.annualAdminCost.formInput > 0) ? this.annualAdminCost.formInput : this.assumptions.selfInsuredInfo.projectedCurrentAdmin*this.employeeLives.formInput*12
         this.calculated.monthlyAdminCost = this.calculated.annualAdminCost/12
 
         this.calculated.annualStopLossPremium = (this.annualStopLossPremium.formInput > 0) ? this.annualStopLossPremium.formInput : this.assumptions.selfInsuredInfo.slPercentOfWorkingBasedOnSize*this.calculated.annualWorkingFund
@@ -466,6 +473,7 @@ export default {
         this.calculated.monthlyClaimsPick = this.calculated.annualClaimsPick/12
 
         this.results.selfInsuredInfo.annualStopLossPremiumSavings = this.calculated.annualStopLossPremium*this.assumptions.selfInsuredInfo.stopLossPercentSavings
+
         this.results.bloom.adminSavingsPercentOfAdminCosts = 1 - (this.assumptions.selfInsuredInfo.adminAnnualCost/this.calculated.annualAdminCost)
         this.results.bloom.adminAnnualSavings = this.calculated.annualAdminCost - this.assumptions.selfInsuredInfo.adminAnnualCost
         this.results.bloom.rxSavingsViaCarveOut = this.assumptions.selfInsuredInfo.pmbSavings*100
@@ -473,14 +481,17 @@ export default {
         this.results.bloom.totalAdditionalPotentialSavings = this.results.bloom.adminAnnualSavings+this.results.bloom.annualRxSavingsViaCarveOut
         this.results.bloom.totalPossibleSavings = this.results.bloom.totalAdditionalPotentialSavings+this.results.selfInsuredInfo.annualStopLossPremiumSavings
 
+        this.results.bloom.monthlyAdminCost = (1-this.results.bloom.adminSavingsPercentOfAdminCosts)*(this.calculated.annualAdminCost/12)
+        this.results.bloom.annualAdminCost = this.results.bloom.monthlyAdminCost*12
+
         this.results.bloom.monthlyStopLossPremium = (1-this.assumptions.selfInsuredInfo.stopLossPercentSavings)*this.calculated.monthlyStopLossPremium
         this.results.bloom.annualStopLossPremium = this.results.bloom.monthlyStopLossPremium*12
 
         this.results.bloom.monthlyClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick
         this.results.bloom.annualClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick*12
 
-        this.results.bloom.monthlyWorkingFund = (this.calculated.monthlyClaimsPick+(this.assumptions.selfInsuredInfo.adminAnnualCost/12)+this.results.bloom.monthlyStopLossPremium).toFixed(2)
-        this.results.bloom.annualWorkingFund = (this.calculated.annualClaimsPick+this.assumptions.selfInsuredInfo.adminAnnualCost+this.results.bloom.annualStopLossPremium).toFixed(2)
+        this.results.bloom.monthlyWorkingFund = this.results.bloom.monthlyAdminCost+this.results.bloom.monthlyStopLossPremium+this.results.bloom.monthlyClaimsCost
+        this.results.bloom.annualWorkingFund = this.results.bloom.annualAdminCost+this.results.bloom.annualStopLossPremium+this.results.bloom.annualClaimsCost
       } else {
         //Fully Insured Assumptions
         this.assumptions.fullyInsuredInfo.fISavingsBaseline = this.assumptions.fullyInsuredInfo.fISavingsHIT+this.assumptions.fullyInsuredInfo.fISavingsRx
@@ -499,14 +510,17 @@ export default {
         this.calculated.annualClaimsPick = this.calculated.annualPremium-this.calculated.annualAdminCost-this.calculated.annualStopLossPremium
         this.calculated.monthlyClaimsPick = this.calculated.annualClaimsPick/12
 
+        this.results.bloom.monthlyAdminCost = (1-this.results.bloom.adminSavingsPercentOfAdminCosts)*(this.calculated.annualAdminCost/12)
+        this.results.bloom.annualAdminCost = this.results.bloom.monthlyAdminCost*12
+
         this.results.bloom.monthlyStopLossPremium = (1-this.assumptions.selfInsuredInfo.stopLossPercentSavings)*this.calculated.monthlyStopLossPremium
         this.results.bloom.annualStopLossPremium = this.results.bloom.monthlyStopLossPremium*12
 
         this.results.bloom.monthlyClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick
         this.results.bloom.annualClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick*12
 
-        this.results.bloom.monthlyPremium = (this.calculated.monthlyClaimsPick+(this.assumptions.selfInsuredInfo.adminAnnualCost/12)+this.results.bloom.monthlyStopLossPremium).toFixed(2)
-        this.results.bloom.annualPremium = (this.calculated.annualClaimsPick+this.assumptions.selfInsuredInfo.adminAnnualCost+this.results.bloom.annualStopLossPremium).toFixed(2)
+        this.results.bloom.monthlyPremium = this.results.bloom.monthlyAdminCost+this.results.bloom.monthlyStopLossPremium+this.results.bloom.monthlyClaimsCost
+        this.results.bloom.annualPremium = this.results.bloom.annualAdminCost+this.results.bloom.annualStopLossPremium+this.results.bloom.annualClaimsCost
 
         this.results.fullyInsuredInfo.annualPremiumSavings = this.calculated.annualPremium - this.results.bloom.annualPremium
         this.results.fullyInsuredInfo.premiumSavingsPercent = this.results.fullyInsuredInfo.annualPremiumSavings/this.calculated.annualPremium
@@ -591,13 +605,14 @@ export default {
     border-radius: 5px;
     position: relative;
     overflow: hidden;
+    min-height:360px;
     form{
       transition: 1s all;
       &#pardot-form{
         position: absolute;
         left:30px;
         width:calc(100% - 60px);
-        top:80px;
+        top:130px;
         opacity: 1;
         &.hidden{
           left: 100% !important;
@@ -655,6 +670,9 @@ export default {
         width:100%;
         text-align: center;
         margin:0 0 15px;
+      }
+      h3{
+        text-align: center;
       }
       p{
         font-size: 12px;
