@@ -458,66 +458,44 @@ export default {
       this.assumptions.selfInsuredInfo.slPercentOfWorkingBasedOnSize = 3.2094 * Math.pow(this.employeeLives.formInput, -0.569)
       this.assumptions.selfInsuredInfo.adminPercentSavingsDefault = (this.assumptions.selfInsuredInfo.projectedCurrentAdmin/this.assumptions.selfInsuredInfo.bloomAdminPEMP)-1
 
+      this.calculated.annualWorkingFund = (this.annualWorkingFund.formInput > 0) ? this.annualWorkingFund.formInput : this.assumptions.selfInsuredInfo.siPemBasedOnLives
+      this.calculated.monthlyWorkingFund = this.calculated.annualWorkingFund/12
+
+      this.calculated.annualAdminCost = (this.annualAdminCost.formInput > 0) ? this.annualAdminCost.formInput : this.assumptions.selfInsuredInfo.projectedCurrentAdmin*this.employeeLives.formInput*12
+      this.calculated.monthlyAdminCost = this.calculated.annualAdminCost/12
+
+      this.calculated.annualStopLossPremium = (this.annualStopLossPremium.formInput > 0) ? this.annualStopLossPremium.formInput : this.assumptions.selfInsuredInfo.slPercentOfWorkingBasedOnSize*this.calculated.annualWorkingFund
+      this.calculated.monthlyStopLossPremium = this.calculated.annualStopLossPremium/12
+
+      this.calculated.annualClaimsPick = this.calculated.annualWorkingFund-this.calculated.annualAdminCost-this.calculated.annualStopLossPremium
+      this.calculated.monthlyClaimsPick = this.calculated.annualClaimsPick/12
+
+      this.results.selfInsuredInfo.annualStopLossPremiumSavings = this.calculated.annualStopLossPremium*this.assumptions.selfInsuredInfo.stopLossPercentSavings
+
+      this.results.bloom.adminSavingsPercentOfAdminCosts = 1 - (this.assumptions.selfInsuredInfo.adminAnnualCost/this.calculated.annualAdminCost)
+      this.results.bloom.adminAnnualSavings = this.calculated.annualAdminCost - this.assumptions.selfInsuredInfo.adminAnnualCost
+      this.results.bloom.rxSavingsViaCarveOut = this.assumptions.selfInsuredInfo.pmbSavings*100
+      this.results.bloom.annualRxSavingsViaCarveOut = this.assumptions.selfInsuredInfo.pmbSavings*this.calculated.annualClaimsPick
+      this.results.bloom.totalAdditionalPotentialSavings = this.results.bloom.adminAnnualSavings+this.results.bloom.annualRxSavingsViaCarveOut
+      this.results.bloom.totalPossibleSavings = this.results.bloom.totalAdditionalPotentialSavings+this.results.selfInsuredInfo.annualStopLossPremiumSavings
+
+      this.results.bloom.monthlyAdminCost = (1-this.results.bloom.adminSavingsPercentOfAdminCosts)*(this.calculated.annualAdminCost/12)
+      this.results.bloom.annualAdminCost = this.results.bloom.monthlyAdminCost*12
+
+      this.results.bloom.monthlyStopLossPremium = (1-this.assumptions.selfInsuredInfo.stopLossPercentSavings)*this.calculated.monthlyStopLossPremium
+      this.results.bloom.annualStopLossPremium = this.results.bloom.monthlyStopLossPremium*12
+
+      this.results.bloom.monthlyClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick
+      this.results.bloom.annualClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick*12
+
       if(this.bSelfInsured){
-
-        this.calculated.annualWorkingFund = (this.annualWorkingFund.formInput > 0) ? this.annualWorkingFund.formInput : this.assumptions.selfInsuredInfo.siPemBasedOnLives
-        this.calculated.monthlyWorkingFund = this.calculated.annualWorkingFund/12
-
-        this.calculated.annualAdminCost = (this.annualAdminCost.formInput > 0) ? this.annualAdminCost.formInput : this.assumptions.selfInsuredInfo.projectedCurrentAdmin*this.employeeLives.formInput*12
-        this.calculated.monthlyAdminCost = this.calculated.annualAdminCost/12
-
-        this.calculated.annualStopLossPremium = (this.annualStopLossPremium.formInput > 0) ? this.annualStopLossPremium.formInput : this.assumptions.selfInsuredInfo.slPercentOfWorkingBasedOnSize*this.calculated.annualWorkingFund
-        this.calculated.monthlyStopLossPremium = this.calculated.annualStopLossPremium/12
-
-        this.calculated.annualClaimsPick = this.calculated.annualWorkingFund-this.calculated.annualAdminCost-this.calculated.annualStopLossPremium
-        this.calculated.monthlyClaimsPick = this.calculated.annualClaimsPick/12
-
-        this.results.selfInsuredInfo.annualStopLossPremiumSavings = this.calculated.annualStopLossPremium*this.assumptions.selfInsuredInfo.stopLossPercentSavings
-
-        this.results.bloom.adminSavingsPercentOfAdminCosts = 1 - (this.assumptions.selfInsuredInfo.adminAnnualCost/this.calculated.annualAdminCost)
-        this.results.bloom.adminAnnualSavings = this.calculated.annualAdminCost - this.assumptions.selfInsuredInfo.adminAnnualCost
-        this.results.bloom.rxSavingsViaCarveOut = this.assumptions.selfInsuredInfo.pmbSavings*100
-        this.results.bloom.annualRxSavingsViaCarveOut = this.assumptions.selfInsuredInfo.pmbSavings*this.calculated.annualClaimsPick
-        this.results.bloom.totalAdditionalPotentialSavings = this.results.bloom.adminAnnualSavings+this.results.bloom.annualRxSavingsViaCarveOut
-        this.results.bloom.totalPossibleSavings = this.results.bloom.totalAdditionalPotentialSavings+this.results.selfInsuredInfo.annualStopLossPremiumSavings
-
-        this.results.bloom.monthlyAdminCost = (1-this.results.bloom.adminSavingsPercentOfAdminCosts)*(this.calculated.annualAdminCost/12)
-        this.results.bloom.annualAdminCost = this.results.bloom.monthlyAdminCost*12
-
-        this.results.bloom.monthlyStopLossPremium = (1-this.assumptions.selfInsuredInfo.stopLossPercentSavings)*this.calculated.monthlyStopLossPremium
-        this.results.bloom.annualStopLossPremium = this.results.bloom.monthlyStopLossPremium*12
-
-        this.results.bloom.monthlyClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick
-        this.results.bloom.annualClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick*12
-
         this.results.bloom.monthlyWorkingFund = this.results.bloom.monthlyAdminCost+this.results.bloom.monthlyStopLossPremium+this.results.bloom.monthlyClaimsCost
         this.results.bloom.annualWorkingFund = this.results.bloom.annualAdminCost+this.results.bloom.annualStopLossPremium+this.results.bloom.annualClaimsCost
+
       } else {
         //Fully Insured Assumptions
-        this.assumptions.fullyInsuredInfo.fISavingsBaseline = this.assumptions.fullyInsuredInfo.fISavingsHIT+this.assumptions.fullyInsuredInfo.fISavingsRx
-        this.assumptions.fullyInsuredInfo.fiPremiumBasedOnLives = this.employeeLives.formInput*this.assumptions.fullyInsuredInfo.fullyInsuredTotalCost*this.membersPerEmployee*12
-        this.assumptions.fullyInsuredInfo.fIPremiumSavingsEstimate = this.assumptions.additionalToMatchSIBloomCost+this.assumptions.fullyInsuredInfo.fISavings+this.assumptions.fullyInsuredInfo.fISavingsBaseline
-
-        this.calculated.annualPremium = (this.annualPremium.formInput > 0) ? this.annualPremium.formInput : this.assumptions.fullyInsuredInfo.fiPremiumBasedOnLives
+        this.calculated.annualPremium = this.calculated.annualWorkingFund
         this.calculated.monthlyPremium = this.calculated.annualPremium/12
-
-        this.calculated.annualAdminCost = (this.annualAdminCost.formInput > 0) ? this.annualAdminCost.formInput : this.assumptions.selfInsuredInfo.projectedCurrentAdmin*this.employeeLives.formInput
-        this.calculated.monthlyAdminCost = this.calculated.annualAdminCost/12
-
-        this.calculated.annualStopLossPremium = (this.annualStopLossPremium.formInput > 0) ? this.annualStopLossPremium.formInput : this.assumptions.selfInsuredInfo.slPercentOfWorkingBasedOnSize*this.calculated.annualPremium
-        this.calculated.monthlyStopLossPremium = this.calculated.annualStopLossPremium/12
-
-        this.calculated.annualClaimsPick = this.calculated.annualPremium-this.calculated.annualAdminCost-this.calculated.annualStopLossPremium
-        this.calculated.monthlyClaimsPick = this.calculated.annualClaimsPick/12
-
-        this.results.bloom.monthlyAdminCost = (1-this.results.bloom.adminSavingsPercentOfAdminCosts)*(this.calculated.annualAdminCost/12)
-        this.results.bloom.annualAdminCost = this.results.bloom.monthlyAdminCost*12
-
-        this.results.bloom.monthlyStopLossPremium = (1-this.assumptions.selfInsuredInfo.stopLossPercentSavings)*this.calculated.monthlyStopLossPremium
-        this.results.bloom.annualStopLossPremium = this.results.bloom.monthlyStopLossPremium*12
-
-        this.results.bloom.monthlyClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick
-        this.results.bloom.annualClaimsCost = (1-this.assumptions.selfInsuredInfo.pmbSavings)*this.calculated.monthlyClaimsPick*12
 
         this.results.bloom.monthlyPremium = this.results.bloom.monthlyAdminCost+this.results.bloom.monthlyStopLossPremium+this.results.bloom.monthlyClaimsCost
         this.results.bloom.annualPremium = this.results.bloom.annualAdminCost+this.results.bloom.annualStopLossPremium+this.results.bloom.annualClaimsCost
